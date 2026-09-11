@@ -1,22 +1,61 @@
-                    GNU GENERAL PUBLIC LICENSE
-                       Version 3, 29 June 2007
+HR APPLICATION OVERRIDE — PROPRIETARY LICENSE
+==============================================
 
- Copyright (C) 2007 Free Software Foundation, Inc. <https://fsf.org/>
- Everyone is permitted to copy and distribute verbatim copies
- of this license document, but changing it is not allowed.
+Copyright (c) 2026 aa-hroverride. All Rights Reserved.
 
-                          Preamble
+This software and its source code ("the Software") is proprietary and
+closed-source.  By installing, copying, or otherwise using the Software,
+you agree to the terms of this license.
 
-  The GNU General Public License is a free, copyleft license for
-software and other kinds of works.
+1. GRANT OF LICENSE
 
-  The licenses for most software and other practical works are designed
-to take away your freedom to share and change the works.  By contrast,
-the GNU General Public License is intended to guarantee your freedom to
-share and change all versions of a program--to make sure it remains free
-software for all its users.  We, the Free Software Foundation, use the
-GNU General Public License for most of our software; it applies also to
-any other work released this way by its authors.  You can apply it to
-your programs, too.
+   You are granted a non-exclusive, non-transferable, revocable license
+   to install and run the Software on Alliance Auth instances that you
+   own or operate ("Authorized Use").  This includes deployment via
+   Docker or any other standard Alliance Auth hosting method.
 
-  For the full text, see <https://www.gnu.org/licenses/gpl-3.0.txt>.
+2. RESTRICTIONS
+
+   You may NOT, without prior written permission from the copyright
+   holder:
+
+   a. Fork, copy, reproduce, or distribute the Software or any
+      substantial part of it to any third party.
+
+   b. Modify, adapt, translate, or create derivative works based on
+      the Software, EXCEPT for:
+      - Configuration changes required to integrate the Software with
+        your Alliance Auth installation (e.g. editing settings files).
+      - Private modifications made solely for your own deployment that
+        are not shared, published, or distributed.
+
+   c. Sell, sublicense, lease, rent, or otherwise commercialise the
+      Software.
+
+   d. Remove or alter any copyright notice, license text, or attribution
+      within the Software.
+
+   e. Reverse-engineer, decompile, or disassemble the Software, except
+      to the extent that such activity is expressly permitted by
+      applicable law notwithstanding this limitation.
+
+3. NO WARRANTY
+
+   The Software is provided "AS IS", without warranty of any kind,
+   express or implied, including but not limited to the warranties of
+   merchantability, fitness for a particular purpose, and
+   non-infringement.  In no event shall the copyright holder be liable
+   for any claim, damages, or other liability arising from the use of
+   the Software.
+
+4. TERMINATION
+
+   This license terminates automatically if you breach any of its
+   terms.  Upon termination, you must cease all use of the Software and
+   destroy all copies in your possession or control.
+
+5. MISCELLANEOUS
+
+   This license constitutes the entire agreement between you and the
+   copyright holder concerning the Software.  If any provision is held
+   unenforceable, the remaining provisions remain in full effect.

@@ -1,5 +1,10 @@
 # HR Application Override
 
+> **Proprietary — Closed Source.** You may install and use this plugin on
+> Alliance Auth instances you own or operate. You may not fork,
+> redistribute, or create derivative works for distribution. See
+> [LICENSE](LICENSE) for full terms.
+
 A production-ready [Alliance Auth](https://gitlab.com/allianceauth/allianceauth)
 plugin that adds a **Director / CEO override layer** to the built-in
 `allianceauth.hrapplications` system.
@@ -271,4 +276,10 @@ from aa_hr_override.helpers import (
 
 ## License
 
-GPL-3.0
+Proprietary — All Rights Reserved. See [LICENSE](LICENSE).
+
+This plugin is **closed source**. You may install and use it on Alliance
+Auth instances you own or operate, including via Docker. You may **not**
+fork, redistribute, sell, sublicense, or create derivative works for
+distribution. Private configuration changes for your own deployment are
+permitted.
