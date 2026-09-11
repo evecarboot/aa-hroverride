@@ -1,0 +1,119 @@
+{% extends "allianceauth/base-bs5.html" %}
+
+{% load i18n %}
+
+{% block page_title %}
+    {% translate "HR Override Audit Log" %}
+{% endblock page_title %}
+
+{% block header_nav_brand %}
+    {% translate "HR Override Audit Log" %}
+{% endblock header_nav_brand %}
+
+{% block content %}
+    <div>
+        {% if app_id_filter %}
+            {% blocktranslate with id=app_id_filter as page_header trimmed %}
+                Override Audit Log &mdash; Application #{{ id }}
+            {% endblocktranslate %}
+        {% else %}
+            {% translate "HR Override Audit Log" as page_header %}
+        {% endif %}
+        {% include "framework/header/page-header.html" with title=page_header %}
+
+        <div class="mb-3">
+            <a href="{% url 'hrapplications:index' %}" class="btn btn-secondary btn-sm">
+                <i class="fa-solid fa-arrow-left"></i>
+                {% translate "Back to Applications" %}
+            </a>
+            {% if app_id_filter %}
+                <a href="{% url 'aa_hr_override:audit_log' %}" class="btn btn-outline-secondary btn-sm">
+                    {% translate "View All Logs" %}
+                </a>
+            {% endif %}
+        </div>
+
+        {% if logs %}
+            <div class="card card-default">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <tr>
+                                <th class="text-center">{% translate "Application" %}</th>
+                                <th class="text-center">{% translate "Action" %}</th>
+                                <th class="text-center">{% translate "Performed By" %}</th>
+                                <th class="text-center">{% translate "Previous Reviewer" %}</th>
+                                <th class="text-center">{% translate "New Reviewer" %}</th>
+                                <th class="text-center">{% translate "Reason" %}</th>
+                                <th class="text-center">{% translate "Timestamp" %}</th>
+                            </tr>
+
+                            {% for log in logs %}
+                                <tr>
+                                    <td class="text-center">
+                                        {% if log.application %}
+                                            <a href="{% url 'hrapplications:view' log.application.pk %}">#{{ log.application.pk }}</a>
+                                        {% else %}
+                                            #{{ log.application_pk_snapshot }}
+                                            <span class="badge text-bg-secondary">{% translate "deleted" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if log.action == "TAKEOVER" %}
+                                            <span class="badge text-bg-warning">{{ log.get_action_display }}</span>
+                                        {% elif log.action == "APPROVE_OVERRIDE" %}
+                                            <span class="badge text-bg-success">{{ log.get_action_display }}</span>
+                                        {% elif log.action == "REJECT_OVERRIDE" %}
+                                            <span class="badge text-bg-danger">{{ log.get_action_display }}</span>
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">{{ log.get_action_display }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if log.actor %}
+                                            {% if log.actor.profile.main_character %}
+                                                {{ log.actor.profile.main_character }}
+                                            {% else %}
+                                                {{ log.actor }}
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">{% translate "deleted user" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if log.previous_reviewer %}
+                                            {% if log.previous_reviewer.profile.main_character %}
+                                                {{ log.previous_reviewer.profile.main_character }}
+                                            {% else %}
+                                                {{ log.previous_reviewer }}
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">{% translate "none" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-center">
+                                        {% if log.new_reviewer %}
+                                            {% if log.new_reviewer.profile.main_character %}
+                                                {{ log.new_reviewer.profile.main_character }}
+                                            {% else %}
+                                                {{ log.new_reviewer }}
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge text-bg-secondary">{% translate "none" %}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ log.reason|default:""|linebreaksbr }}</td>
+                                    <td class="text-center">{{ log.timestamp|date:"Y-m-d H:i:s" }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center">
+                {% translate "No override actions have been recorded." %}
+            </div>
+        {% endif %}
+    </div>
+{% endblock content %}

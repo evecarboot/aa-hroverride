@@ -1,0 +1,180 @@
+{% load i18n %}
+{% load django_bootstrap5 %}
+
+{# ====================================================================== #}
+{# Override action buttons                                                 #}
+{# Only shown when the application is pending, has a reviewer that is NOT  #}
+{# the current user, and the current user holds the override permission.   #}
+{# Server-side checks in the views are the real security barrier.           #}
+{# ====================================================================== #}
+{% if app.approved == None and app.reviewer and app.reviewer != user and perms.aa_hr_override.override_application %}
+    <hr class="my-3">
+    <div class="alert alert-warning py-2 mb-3">
+        <strong>
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            {% translate "Director Override Actions" %}
+        </strong><br>
+        {% blocktranslate with reviewer=app.reviewer_str trimmed %}
+            This application is currently assigned to {{ reviewer }}.
+            You may override the reviewer restriction.
+        {% endblocktranslate %}
+    </div>
+
+    {% if perms.hrapplications.approve_application %}
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#modal-override-approve">
+            <i class="fa-solid fa-check"></i>
+            {% translate "Approve Anyway" %}
+        </button>
+    {% endif %}
+
+    {% if perms.hrapplications.reject_application %}
+        <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modal-override-reject">
+            <i class="fa-solid fa-xmark"></i>
+            {% translate "Reject Anyway" %}
+        </button>
+    {% endif %}
+
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#modal-override-takeover">
+        <i class="fa-solid fa-hand"></i>
+        {% translate "Take Over Application" %}
+    </button>
+
+    <a href="{% url 'aa_hr_override:audit_log_for_application' app.id %}" class="btn btn-outline-secondary btn-sm">
+        <i class="fa-solid fa-clipboard-list"></i>
+        {% translate "View Override Log" %}
+    </a>
+{% endif %}
+
+{# ====================================================================== #}
+{# Confirmation modals (POST forms with CSRF)                              #}
+{# ====================================================================== #}
+
+{# --- Take Over modal --- #}
+<div class="modal fade" id="modal-override-takeover" tabindex="-1" aria-labelledby="modalOverrideTakeoverLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'aa_hr_override:takeover' app.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header text-bg-warning">
+                    <div class="modal-title fs-5" id="modalOverrideTakeoverLabel">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% translate "Take Over Application" %}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        {% if app.reviewer_str %}
+                            {% blocktranslate with reviewer=app.reviewer_str trimmed %}
+                                You are about to take ownership of this application
+                                from <strong>{{ reviewer }}</strong>.
+                            {% endblocktranslate %}
+                        {% else %}
+                            {% translate "You are about to take ownership of this application." %}
+                        {% endif %}
+                        {% translate "The previous reviewer will no longer be able to act on it." %}
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label" for="id-takeover-reason">{% translate "Reason (optional)" %}</label>
+                        <textarea class="form-control" id="id-takeover-reason" name="reason" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" %}</button>
+                    <button type="submit" class="btn btn-warning">
+                        <i class="fa-solid fa-hand"></i>
+                        {% translate "Confirm Take Over" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{# --- Approve Override modal --- #}
+{% if perms.hrapplications.approve_application %}
+<div class="modal fade" id="modal-override-approve" tabindex="-1" aria-labelledby="modalOverrideApproveLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'aa_hr_override:approve_override' app.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header text-bg-success">
+                    <div class="modal-title fs-5" id="modalOverrideApproveLabel">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% translate "Approve Anyway" %}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        {% if app.reviewer_str %}
+                            {% blocktranslate with reviewer=app.reviewer_str trimmed %}
+                                You are about to approve this application even though
+                                it is currently assigned to <strong>{{ reviewer }}</strong>.
+                            {% endblocktranslate %}
+                        {% else %}
+                            {% translate "You are about to approve this application." %}
+                        {% endif %}
+                        {% translate "The reviewer will not be changed." %}
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label" for="id-approve-reason">{% translate "Reason (optional)" %}</label>
+                        <textarea class="form-control" id="id-approve-reason" name="reason" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" %}</button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="fa-solid fa-check"></i>
+                        {% translate "Confirm Approve" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{# --- Reject Override modal --- #}
+{% if perms.hrapplications.reject_application %}
+<div class="modal fade" id="modal-override-reject" tabindex="-1" aria-labelledby="modalOverrideRejectLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="{% url 'aa_hr_override:reject_override' app.id %}" method="POST">
+                {% csrf_token %}
+                <div class="modal-header text-bg-danger">
+                    <div class="modal-title fs-5" id="modalOverrideRejectLabel">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        {% translate "Reject Anyway" %}
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% translate 'Close' %}"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        {% if app.reviewer_str %}
+                            {% blocktranslate with reviewer=app.reviewer_str trimmed %}
+                                You are about to reject this application even though
+                                it is currently assigned to <strong>{{ reviewer }}</strong>.
+                            {% endblocktranslate %}
+                        {% else %}
+                            {% translate "You are about to reject this application." %}
+                        {% endif %}
+                        {% translate "The reviewer will not be changed." %}
+                    </div>
+                    <div class="mb-0">
+                        <label class="form-label" for="id-reject-reason">{% translate "Reason (optional)" %}</label>
+                        <textarea class="form-control" id="id-reject-reason" name="reason" rows="3" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{% translate "Cancel" %}</button>
+                    <button type="submit" class="btn btn-danger">
+                        <i class="fa-solid fa-xmark"></i>
+                        {% translate "Confirm Reject" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
